@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
 import { ProductService } from './products.service';
 
@@ -6,12 +7,12 @@ export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
     @Post()
-    addProduct(
+    async addProduct(
         @Body('title') prodTitle: string,
         @Body('description') prodDesc: string,
         @Body('price') prodPrice: number,
-    ): any {
-        const generatedId = this.productService.insertProduct(
+    ) {
+        const generatedId = await this.productService.insertProduct(
             prodTitle, 
             prodDesc, 
             prodPrice
@@ -20,23 +21,25 @@ export class ProductController {
     }
 
     @Get()
-    getAllProducts(): any {
-        return this.productService.getProducts()
+    async getAllProducts() {
+        const products = await this.productService.getProducts();
+        return products;
     }
 
     @Get(':id')
-    getProduct(@Param('id') prodId: string): any {
-        return this.productService.getSingleProduct(prodId);
+    async getProduct(@Param('id') prodId: string) {
+        const product = await this.productService.getSingleProduct(prodId);
+        return product;
     }
 
     @Patch(':id')
-    updateProduct(
+    async updateProduct(
         @Param('id') prodId: string,
         @Body('title') prodTitle: string,
         @Body('description') prodDes: string,
         @Body('price') prodPrice: number    
-    ): any {
-        this.productService.updateProduct(
+    ) {
+        await this.productService.updateProduct(
             prodId,
             prodTitle,
             prodDes,
@@ -46,8 +49,8 @@ export class ProductController {
     }
 
     @Delete(':id')
-    removeProduct(@Param('id') prodId: string,): any {
-        this.productService.deleteProduct(prodId);
+    async removeProduct(@Param('id') prodId: string,){
+        await this.productService.deleteProduct(prodId);
         return null;
     }
 }
